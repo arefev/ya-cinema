@@ -1,0 +1,68 @@
+@startuml CinemaContainer
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+SHOW_PERSON_OUTLINE()
+
+Person(user, "User", "")
+
+System_Boundary(cinema, "cinema"){
+
+    Container(apiGateway, "API Gateway", "Kong")
+
+    Container(bffWeb, "Web BFF", "Go", "Backend for frontend")
+    Container(bffMobile, "Mobile BFF", "Go", "Backend for frontend")
+
+    Container(usersService, "Users service", "Go", "")
+    ContainerDb(usersServiceDB, "Users service database", "PostgreSQL", "")
+
+    Container(eventsService, "Events service", "Go", "")
+    ContainerDb(eventsServiceDB, "Events service messages", "Kafka", "")
+
+    Container(moviesService, "Movies service", "Go", "")
+    ContainerDb(moviesServiceDB, "Movies service database", "PostgreSQL", "")
+
+    Container(paymentsService, "Payments service", "Go", "")
+    ContainerDb(paymentsServiceDB, "Payments service database", "PostgreSQL", "")
+
+    Container(loyaltyService, "Loyalty service", "Go", "")
+    ContainerDb(loyaltyServiceDB, "Loyalty service database", "PostgreSQL", "")
+
+    Container(subscriptionsService, "Subscriptions service", "Go", "")
+    ContainerDb(subscriptionsServiceDB, "Subscriptions service database", "PostgreSQL", "")
+}
+
+Rel_D(user, apiGateway, "Uses", "HTTPS")
+
+Rel_D(apiGateway, bffWeb, "Uses", "HTTPS")
+Rel_D(apiGateway, bffMobile, "Uses", "HTTPS")
+
+Rel_D(bffWeb, usersService, "Uses", "gRPC")
+Rel_D(bffWeb, eventsService, "Uses", "gRPC")
+Rel_D(bffWeb, moviesService, "Uses", "gRPC")
+Rel_D(bffWeb, paymentsService, "Uses", "gRPC")
+Rel_D(bffWeb, loyaltyService, "Uses", "gRPC")
+Rel_D(bffWeb, subscriptionsService, "Uses", "gRPC")
+
+Rel_D(bffMobile, usersService, "Uses", "gRPC")
+Rel_D(bffMobile, eventsService, "Uses", "gRPC")
+Rel_D(bffMobile, moviesService, "Uses", "gRPC")
+Rel_D(bffMobile, paymentsService, "Uses", "gRPC")
+Rel_D(bffMobile, loyaltyService, "Uses", "gRPC")
+Rel_D(bffMobile, subscriptionsService, "Uses", "gRPC")
+
+Rel(usersService, usersServiceDB, "")
+Rel(eventsService, eventsServiceDB, "")
+Rel(moviesService, moviesServiceDB, "")
+Rel(paymentsService, paymentsServiceDB, "")
+Rel(loyaltyService, loyaltyServiceDB, "")
+Rel(subscriptionsService, subscriptionsServiceDB, "")
+
+Rel(usersService, eventsServiceDB, "")
+Rel(moviesService, eventsServiceDB, "")
+Rel(paymentsService, eventsServiceDB, "")
+Rel(loyaltyService, eventsServiceDB, "")
+Rel(subscriptionsService, eventsServiceDB, "")
+
+@enduml
