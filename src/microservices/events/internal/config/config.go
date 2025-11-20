@@ -7,34 +7,22 @@ import (
 )
 
 const (
-	address                string = "localhost:8000"
-	logLevel               string = "info"
-	monolithUrl            string = "http://monolith:8080"
-	moviesServiceUrl       string = "http://movies-service:8081"
-	eventsServiceUrl       string = "http://events-service:8082"
-	gradualMigration       bool   = true
-	moviesMigrationPercent int    = 10
+	address  string = "localhost:8082"
+	logLevel string = "info"
+	kafka    string = "0.0.0.0:9092"
 )
 
 type Config struct {
-	Address                string `env:"ADDRESS"`
-	LogLevel               string `env:"LOG_LEVEL"`
-	MonolithUrl            string `env:"MONOLITH_URL"`
-	MoviesServiceUrl       string `env:"MOVIES_SERVICE_URL"`
-	EventsServiceUrl       string `env:"EVENTS_SERVICE_URL"`
-	GradualMigration       bool   `env:"GRADUAL_MIGRATION"`
-	MoviesMigrationPercent int    `env:"MOVIES_MIGRATION_PERCENT"`
+	Address  string `env:"ADDRESS"`
+	LogLevel string `env:"LOG_LEVEL"`
+	Kafka    string `env:"KAFKA_BROKERS"`
 }
 
 func NewConfig(params []string) (Config, error) {
 	cnf := Config{
-		Address:                address,
-		LogLevel:               logLevel,
-		MonolithUrl:            monolithUrl,
-		MoviesServiceUrl:       moviesServiceUrl,
-		EventsServiceUrl:       eventsServiceUrl,
-		GradualMigration:       gradualMigration,
-		MoviesMigrationPercent: moviesMigrationPercent,
+		Address:  address,
+		LogLevel: logLevel,
+		Kafka: kafka,
 	}
 
 	if err := cnf.initEnvs(); err != nil {
