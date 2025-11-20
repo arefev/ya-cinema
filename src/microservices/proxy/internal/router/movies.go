@@ -17,7 +17,7 @@ func movies(app *application.App) http.Handler {
 		movieHandler.UseGradualMigration()
 	}
 
-	r.HandleFunc("/", movieHandler.Proxy)
+	r.HandleFunc("/*", movieHandler.Proxy)
 
 	return r
 }

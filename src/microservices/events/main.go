@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -8,6 +9,8 @@ import (
 
 
 func main() {
+	http.HandleFunc("/api/events/health", handleHealth)
+	
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -15,4 +18,9 @@ func main() {
 	}
 	log.Printf("Starting events microservice on port %s", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
+}
+
+func handleHealth(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]bool{"status": true})
 }
