@@ -11,22 +11,22 @@ import (
 	"go.uber.org/zap"
 )
 
-type movie struct {
+type payment struct {
 	app *application.App
 }
 
-func NewMovie(app *application.App) *movie {
-	return &movie{app: app}
+func NewPayment(app *application.App) *payment {
+	return &payment{app: app}
 }
 
-func (m *movie) Create(w http.ResponseWriter, r *http.Request) {
-	m.app.Log.Sugar().Infof("kafka address %s", m.app.Conf.Kafka)
+func (p *payment) Create(w http.ResponseWriter, r *http.Request) {
+	p.app.Log.Sugar().Infof("kafka address %s", p.app.Conf.Kafka)
 
 	w.Header().Set("Content-Type", "application/json")
 
 	writer := kafka.NewWriter(kafka.WriterConfig{
-		Brokers: []string{m.app.Conf.Kafka},
-		Topic:   "movie-events",
+		Brokers: []string{p.app.Conf.Kafka},
+		Topic:   "payment-events",
 	})
 	defer writer.Close()
 
@@ -34,7 +34,7 @@ func (m *movie) Create(w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	if err != nil {
-		m.app.Log.Error("Ошибка чтения тела запроса", zap.Error(err))
+		p.app.Log.Error("Ошибка чтения тела запроса", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 		return
@@ -45,7 +45,7 @@ func (m *movie) Create(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if err != nil {
-		m.app.Log.Error("Ошибка при отправке сообщение в брокер", zap.Error(err))
+		p.app.Log.Error("Ошибка при отправке сообщение в брокер", zap.Error(err))
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": "Internal Server Error"})
 		return
@@ -57,8 +57,8 @@ func (m *movie) Create(w http.ResponseWriter, r *http.Request) {
 		"partition": 0,
 		"offset": 42,
 		"event": map[string]any{
-			"id": "movie-1-viewed",
-			"type": "movie",
+			"id": "payment-1-viewed",
+			"type": "payment",
 			"timestamp": "2023-01-15T14:30:00Z",
 			"payload": map[string]any{},
 		},

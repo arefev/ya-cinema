@@ -14,6 +14,7 @@ import (
 	"events/internal/config"
 	"events/internal/logger"
 	"events/internal/router"
+	"events/internal/worker"
 
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -63,6 +64,11 @@ func run() error {
 	}
 
 	g.Go(server.ListenAndServe)
+
+	g.Go(func() error {
+		zLog.Info("Worker run")
+		return worker.NewWorker(&app).Run(gCtx)
+	})
 
 	g.Go(func() error {
 		<-mainCtx.Done()

@@ -3,6 +3,7 @@ package router
 import (
 	"encoding/json"
 	"events/internal/application"
+	"events/internal/handler"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -20,7 +21,13 @@ func New(app *application.App) *chi.Mux {
 		json.NewEncoder(w).Encode(map[string]bool{"status": true})
 	})
 
-	r.Mount("/api/events/movie", movies(app))
+	movieHandler := handler.NewMovie(app)
+	userHandler := handler.NewUser(app)
+	paymentHandler := handler.NewPayment(app)
+
+	r.Post("/api/events/movie", movieHandler.Create)
+	r.Post("/api/events/user", userHandler.Create)
+	r.Post("/api/events/payment", paymentHandler.Create)
 
 	return r
 }
