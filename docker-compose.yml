@@ -112,7 +112,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      PORT: 8000
+      ADDRESS: ":8000"
       MONOLITH_URL: http://monolith:8080
       MOVIES_SERVICE_URL: http://movies-service:8081
       EVENTS_SERVICE_URL: http://events-service:8082

@@ -17,7 +17,7 @@ const (
 )
 
 type Config struct {
-	Address                string `env:"SERVER_ADDRESS"`
+	Address                string `env:"ADDRESS"`
 	LogLevel               string `env:"LOG_LEVEL"`
 	MonolithUrl            string `env:"MONOLITH_URL"`
 	MoviesServiceUrl       string `env:"MOVIES_SERVICE_URL"`

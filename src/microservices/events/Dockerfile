@@ -25,7 +25,7 @@ WORKDIR /root/
 COPY --from=builder /app/events-service .
 
 # Expose the application port
-EXPOSE 8081
+EXPOSE 8082
 
 # Command to run the executable
 CMD ["./events-service"]
