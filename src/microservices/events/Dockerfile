@@ -1,31 +1,35 @@
+# Build stage
 FROM golang:1.23-alpine AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Copy go mod and sum files
-COPY go.mod ./
+# Copy go.mod and go.sum files
+COPY go.mod go.sum ./
 
-# Download all dependencies
+# Download dependencies
 RUN go mod download
 
 # Copy the source code
 COPY . .
 
 # Build the application
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o events-service .
+RUN CGO_ENABLED=0 GOOS=linux go build -o server ./cmd/server/
 
-# Use a smaller image for the final application
-FROM alpine:latest  
+# Runtime stage
+FROM alpine:latest
 
-RUN apk --no-cache add ca-certificates
+# Install necessary runtime dependencies
+RUN apk --no-cache add ca-certificates tzdata
 
-WORKDIR /root/
+# Set working directory
+WORKDIR /app
 
-# Copy the binary from builder
-COPY --from=builder /app/events-service .
+# Copy the binary from the builder stage
+COPY --from=builder /app/server .
 
-# Expose the application port
+# Expose the port the app runs on
 EXPOSE 8082
 
-# Command to run the executable
-CMD ["./events-service"]
+# Command to run the application
+CMD ["./server"]
