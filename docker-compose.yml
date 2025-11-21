@@ -45,6 +45,12 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
       KAFKA_CREATE_TOPICS: "movie-events:1:1,user-events:1:1,payment-events:1:1"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test:
+        ["CMD", "kafka-topics.sh", "--list", "--zookeeper", "zookeeper:2181"]
+      interval: 30s
+      timeout: 30s
+      retries: 4
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     networks:
@@ -89,12 +95,14 @@ services:
       dockerfile: Dockerfile
     container_name: cinemaabyss-events-service
     depends_on:
-      - postgres
-      - kafka
+      postgres:
+          condition: service_healthy
+      kafka:
+          condition: service_healthy
     ports:
       - "8082:8082"
     environment:
-      PORT: 8082
+      ADDRESS: ":8082"
       KAFKA_BROKERS: kafka:9092
     networks:
       - cinemaabyss-network
@@ -112,7 +120,7 @@ services:
     ports:
       - "8000:8000"
     environment:
-      PORT: 8000
+      ADDRESS: ":8000"
       MONOLITH_URL: http://monolith:8080
       MOVIES_SERVICE_URL: http://movies-service:8081
       EVENTS_SERVICE_URL: http://events-service:8082
